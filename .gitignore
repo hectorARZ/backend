@@ -1,0 +1,11 @@
+# .gitignore
+.env
+__pycache__/
+
+# entorno virutal
+venv/
+.venv/
+env/
+venv.bak/
+
+verbecc.log
