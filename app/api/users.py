@@ -12,13 +12,13 @@ from app.schemas.user import UsuarioCreate, UsuarioResponse
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
-def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db), usuario_actual: Usuario = Depends(get_usuario_actual)):
     
-    #if usuario_actual.rol != "admin":
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="¡Solo los administradores pueden crear usuarios nuevos."
-    #    )
+    if usuario_actual.rol != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="¡Solo los administradores pueden crear usuarios nuevos."
+        )
     
     usuario_existente = db.query(Usuario).filter(Usuario.email == usuario.email).first()
     if usuario_existente:
