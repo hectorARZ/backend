@@ -48,10 +48,20 @@ async def chat_principal(
     try:
         config_dict = request.config.model_dump()
 
+        historial_seguro = []
+        for m in request.messageHistory:
+            rol = m.get("role") if isinstance(m, dict) else getattr(m, "role", "user")
+            contenido = m.get("content") if isinstance(m, dict) else getattr(m, "content", "")
+            
+            if contenido is None:
+                contenido = ""
+                
+            historial_seguro.append({"role": rol, "content": contenido})
+
         if request.gradeExercise:
             resultado_final = await evaluar_chat_ia(
                 config=config_dict,
-                historial=request.messageHistory
+                historial=historial_seguro 
             )
             
             score = float(resultado_final.get("score", 0))
@@ -68,7 +78,7 @@ async def chat_principal(
             db.add(nueva_sesion)
             db.flush()
 
-            textos_del_usuario = " | ".join([m.content for m in request.messageHistory if m.role == "user"])
+            textos_del_usuario = " | ".join([m["content"] for m in historial_seguro if m["role"] == "user"])
 
             detalle = DetalleRespuesta(
                 sesion_id=nueva_sesion.id,
@@ -92,7 +102,7 @@ async def chat_principal(
         resultado_turno = await generar_respuesta_chat_ia(
             mensaje=request.message,
             config=config_dict,
-            historial=request.messageHistory
+            historial=historial_seguro
         )
         
         if "respuesta_chat" not in resultado_turno:

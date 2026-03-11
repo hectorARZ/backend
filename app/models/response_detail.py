@@ -10,8 +10,8 @@ class DetalleRespuesta(Base):
     sesion_id = Column(Integer, ForeignKey("sesiones.id", ondelete="CASCADE"), nullable=False)
     
     verbo_infinitivo = Column(String(50), nullable=False)
-    respuesta_correcta = Column(String(50), nullable=False)
-    respuesta_usuario = Column(String(50), nullable=False)
+    respuesta_correcta = Column(Text, nullable=False)
+    respuesta_usuario = Column(Text, nullable=False)
     
     puntaje = Column(Float, nullable=False)
 
